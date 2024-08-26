@@ -30,6 +30,14 @@ class TaskController extends Controller
             'tareas' => $tareas
         ],200);
     }
+    //read por id
+    public function show($id)
+    {
+        $task = Task::with('categoria')->findOrFail($id);
+        return response()->json([
+            'task' => $task
+        ]);
+    }
 
     //update
     public function edit($id)
@@ -50,5 +58,11 @@ class TaskController extends Controller
         $task->categoria_id = $request->categoria_id;
 
         $task->save();
+    }
+
+    //delete
+    public function destroy($id){
+        $task = Task::findOrFail($id);
+        $task->delete();
     }
 }

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import taskIndex from '../components//tasks/Index.vue';
-import taskFormCreate from '../components//tasks/TaskFormCreate.vue';
+import taskIndex from '../components/tasks/Index.vue';
+import taskFormCreate from '../components/tasks/TaskFormCreate.vue';
+import taskFormDetail from '../components/tasks/TaskFormDetail.vue';
 import notFound from '../components/NotFound.vue'
 
 import categoryForm from '../components/categories/CategoryForm.vue'
@@ -22,6 +23,11 @@ const routes = [
         path:'/tareas/:id/editar',
         name:'tasks.edit',
         component: taskFormCreate
+    },
+    {
+        path:'/tareas/:id/detalle',
+        name:'tasks.detalle',
+        component: taskFormDetail
     },
     {
         path:'/categorias',

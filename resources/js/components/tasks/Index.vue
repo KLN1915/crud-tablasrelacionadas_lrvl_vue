@@ -23,6 +23,16 @@
         })
     }
 
+    //update
+    const onEdit = (id)=>{
+        router.push(`/tareas/${id}/editar`)
+    }
+
+    //detalle
+    const onDetail = (id)=>{
+        router.push(`/tareas/${id}/detalle`)
+    }
+
 </script>
 <template>
     <div class="container mx-auto px-4 py-6">
@@ -55,11 +65,11 @@
                     <td class="py-2 px-4 border-b border-gray-200">{{ tarea.estado_completada === 1 ? 'COMPLETADO' : 'PENDIENTE' }}</td>
                     <td class="py-2 px-4 border-b border-gray-200 flex space-x-2">
                         <!-- Botón de eliminar -->
-                        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700">
+                        <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700" @click="onDetail(tarea.id)">
                             Detalle
                         </button>
                         <!-- Botón de editar -->
-                        <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-700">
+                        <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-700" @click="onEdit(tarea.id)">
                             Editar
                         </button>
                         

@@ -1,78 +1,85 @@
 <script setup>
-    import { reactive, ref, onMounted } from 'vue';
-    import { useRouter, useRoute } from 'vue-router';
+import { reactive, ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
-    const form = reactive({
-        titulo: '',
-        descripcion: '',
-        estado_completada: '',
-        categoria_id: '',
-    })
+const form = reactive({
+    titulo: '',
+    descripcion: '',
+    estado_completada: '',
+    categoria_id: '',
+});
 
-    const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
-    const route = useRoute()
+const editMode = ref(false);
 
-    const editMode = ref(false)
+// para el read del select
+const categorias = ref([]);
 
-    //para el read del select
-    let categorias = ref([])
+onMounted(async () => {
+    // Cargar las categorías
+    await getCategories();
 
-    onMounted(async () => {
-        getCategories()
-    })
-
-    //update
-    // onMounted(() => {
-    //     if(route.name === 'tasks.edit'){
-    //         editMode.value = true
-    //         getTask()
-    //     }
-    // })
-
-    // const getTask = async () => {
-    //     let response = await axios.get(`/api/tareas/${route.params.id}/editar`)
-    //     .then((response) => {
-    //         form.titulo = response.data.task.titulo,
-    //         form.descripcion = response.data.task.descripcion,
-    //         form.estado_completada = response.data.task.estado_completada,
-    //         form.categoria_id = response.data.task.categoria_id
-    //     })
-    // }
-
-    // const handleSave = (values, actions) => {
-    //     if(editMode.value){
-    //         updateTask(values, actions)
-    //     }else{
-    //         createTask(values,actions)
-    //     }
-    // }
-
-    //create
-    const createTask = (values, actions) => {
-        axios.post('/api/tareas',form)
-        .then((response)=>{
-            router.push('/tareas')
-        })
+    // Si estamos en modo edición, cargar la tarea
+    if(route.name === 'tasks.edit'){
+        editMode.value = true;
+        await getTask();
     }
+});
 
-    //read del select
-    const getCategories = async () => {
-        let response = await axios.get('/api/categorias')
-        .then((response) => {
-            categorias.value = response.data.categorias
-        })
+const getTask = async () => {
+    try {
+        let response = await axios.get(`/api/tareas/${route.params.id}/editar`);
+        form.titulo = response.data.task.titulo;
+        form.descripcion = response.data.task.descripcion;
+        form.estado_completada = response.data.task.estado_completada;
+        form.categoria_id = response.data.task.categoria_id;
+    } catch (error) {
+        console.error("Error al obtener la tarea:", error);
     }
+};
 
-    //update
-    // const updateTask = (values, actions) => {
-    //     axios.put(`/api/tareas/${route.params.id}`,form)
-    //     .then((response)=>{
-    //         router.push('/tareas')
-    //     })
-    // }
+const handleSave = () => {
+    if(editMode.value){
+        updateTask();
+    } else {
+        createTask();
+    }
+};
+
+// create
+const createTask = async () => {
+    try {
+        await axios.post('/api/tareas', form);
+        router.push('/tareas');
+    } catch (error) {
+        console.error("Error al crear la tarea:", error);
+    }
+};
+
+// read del select
+const getCategories = async () => {
+    try {
+        let response = await axios.get('/api/categorias');
+        categorias.value = response.data.categorias;
+    } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+    }
+};
+
+// update
+const updateTask = async () => {
+    try {
+        await axios.put(`/api/tareas/${route.params.id}`, form);
+        router.push('/tareas');
+    } catch (error) {
+        console.error("Error al actualizar la tarea:", error);
+    }
+};
 
 </script>
+
 <template>  
     <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
         <!-- Título del formulario -->
@@ -128,16 +135,14 @@
                     name="categoria_id"
                     class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required>
-                    <!-- Los valores de las opciones deberían ser cargados dinámicamente -->
                     <option value="" disabled>Seleccione una categoría</option>
                     <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">{{ categoria.nombre }}</option>
                 </select>
             </div>
 
-
-                <!-- Botón de enviar -->
+            <!-- Botón de enviar -->
             <div class="text-center">
-                <button @click="createTask"
+                <button @click="handleSave"
                     type="submit" 
                     class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Guardar Tarea
